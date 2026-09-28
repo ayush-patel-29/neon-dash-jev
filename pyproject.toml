@@ -1,0 +1,8 @@
+[project]
+name = "neon-dash-jev"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "python-dotenv>=1.2.3",
+    "typesafe-sdk",
+]

@@ -1,0 +1,1277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>NEON DASH — YOU vs JEV</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05040c;
+        --cy: #19f5ff;
+        --mg: #ff2bd6;
+        --yl: #ffe62b;
+        --tx: #e9f7ff;
+        --u: 1;
+        color-scheme: dark;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        overflow: hidden;
+        font-family: Orbitron, "Segoe UI", system-ui, sans-serif;
+        color: var(--tx);
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #wrap {
+        position: relative;
+      }
+
+      #panes {
+        display: flex;
+        gap: 8px;
+      }
+
+      .pane {
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px #19f5ff66, 0 0 30px #19f5ff22;
+      }
+
+      .jvp {
+        box-shadow: 0 0 0 1px #ff2bd666, 0 0 30px #ff2bd622;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .lab {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        gap: calc(12px * var(--u));
+        padding: calc(8px * var(--u)) calc(12px * var(--u));
+        font-size: max(11px, calc(15px * var(--u)));
+        letter-spacing: 0.16em;
+        pointer-events: none;
+      }
+
+      .lab b {
+        color: #05040c;
+        background: var(--cy);
+        padding: 2px 12px 2px 8px;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+      }
+
+      .jvp .lab b {
+        background: var(--mg);
+      }
+
+      .lab span {
+        color: var(--yl);
+        text-shadow: 0 0 8px #000;
+      }
+
+      #jv {
+        position: absolute;
+        bottom: calc(6px * var(--u));
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: max(10px, calc(11px * var(--u)));
+        letter-spacing: 0.14em;
+        color: var(--yl);
+        text-shadow: 0 0 8px #000;
+        pointer-events: none;
+      }
+
+      .ov {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: calc(14px * var(--u));
+        text-align: center;
+        background: radial-gradient(#05040c77, #05040cdd);
+      }
+
+      .hide {
+        display: none !important;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-shadow: 0 0 12px var(--cy), 0 0 34px var(--mg);
+      }
+
+      h1 {
+        font-size: calc(64px * var(--u));
+        animation: gl 3s infinite;
+      }
+
+      h2 {
+        font-size: calc(46px * var(--u));
+        color: var(--mg);
+      }
+
+      @keyframes gl {
+        0%,
+        92%,
+        100% {
+          transform: none;
+        }
+
+        94% {
+          transform: translate(-3px, 0) skewX(-6deg);
+          text-shadow: 3px 0 var(--mg), -3px 0 var(--cy);
+        }
+
+        96% {
+          transform: translate(3px, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        h1 {
+          animation: none;
+        }
+      }
+
+      .sub {
+        font-size: max(11px, calc(13px * var(--u)));
+        letter-spacing: 0.26em;
+        color: var(--cy);
+        padding: 0 12px;
+      }
+
+      .dim {
+        color: #b9c4ff;
+      }
+
+      button {
+        font: inherit;
+        font-weight: 800;
+        letter-spacing: 0.22em;
+        font-size: max(13px, calc(18px * var(--u)));
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0 calc(36px * var(--u));
+        color: #05040c;
+        background: var(--cy);
+        border: 0;
+        cursor: pointer;
+        clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+        transition: background 0.15s;
+      }
+
+      button:hover {
+        background: var(--mg);
+      }
+
+      button:focus-visible {
+        background: var(--yl);
+      }
+
+      #mu {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        z-index: 5;
+        padding: 0;
+        background: #05040c99;
+        border: 1px solid var(--cy);
+        clip-path: none;
+        display: grid;
+        place-items: center;
+      }
+
+      #mu:hover,
+      #mu:focus-visible {
+        background: #19f5ff33;
+      }
+
+      .scan {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 6;
+        background: repeating-linear-gradient(0deg, #0000 0 2px, #0003 2px 3px), radial-gradient(transparent 60%, #0008);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <div id="panes">
+        <div class="pane" id="p0">
+          <canvas id="c0" aria-label="Your lane"></canvas>
+          <div class="lab"><b>YOU</b><span id="s0">0m</span></div>
+        </div>
+        <div class="pane jvp" id="p1">
+          <canvas id="c1" aria-label="Jev's lane"></canvas>
+          <div class="lab"><b>JEV</b><span id="s1">0m</span></div>
+          <div id="jv" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <button id="mu" aria-label="Toggle sound"></button>
+
+      <div id="menu" class="ov">
+        <div class="sub">// CYBER RUNNER · HUMAN vs JEV</div>
+        <h1>NEON DASH</h1>
+        <button id="go">START RACE</button>
+        <div class="sub dim">SPACE / ↑ / CLICK / TAP = JUMP · HOLD TO KEEP HOPPING</div>
+        <div class="sub">SAME TRACK · SAME SPEED · FIRST TO CRASH LOSES</div>
+        <div class="sub dim">P = PAUSE · M = MUTE</div>
+      </div>
+
+      <div id="dead" class="ov hide">
+        <div class="sub">// RACE COMPLETE</div>
+        <h2 id="hd"></h2>
+        <div class="sub" id="res" style="font-size:max(14px,calc(20px*var(--u)))"></div>
+        <div class="sub dim" id="rec"></div>
+        <button id="rt">RACE AGAIN</button>
+      </div>
+
+      <div id="pz" class="ov hide">
+        <h2>PAUSED</h2>
+        <div class="sub">PRESS P OR TAP TO RESUME</div>
+      </div>
+
+      <div class="scan"></div>
+    </div>
+
+    <script>
+      (() => {
+        const W = 960,
+          H = 540,
+          G = 400,
+          PX = 230,
+          S = 40,
+          VX = 480,
+          $ = (i) => document.getElementById(i);
+        const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let sc = 1,
+          best = 0,
+          muted = false,
+          wl = { w: 0, l: 0, t: 0 };
+
+        try {
+          best = +localStorage.getItem("nd_best") || 0;
+          muted = localStorage.getItem("nd_mute") === "1";
+          wl = JSON.parse(localStorage.getItem("nd_wl")) || wl;
+        } catch (e) {}
+
+        const panes = [$("p0"), $("p1")],
+          cvs = [$("c0"), $("c1")];
+
+        function rs() {
+          const d = Math.min(devicePixelRatio || 1, 2),
+            b = document.body,
+            bw = b.clientWidth - 8,
+            bh = b.clientHeight - 8,
+            a = Math.min(bw / W, bh / (2 * H + 8)),
+            s = Math.min(bw / (2 * W + 8), bh / H),
+            side = s > a;
+
+          sc = Math.max(0.2, side ? s : a);
+          $("panes").style.flexDirection = side ? "row" : "column";
+
+          for (let i = 0; i < 2; i++) {
+            panes[i].style.width = W * sc + "px";
+            panes[i].style.height = H * sc + "px";
+            cvs[i].width = W * sc * d;
+            cvs[i].height = H * sc * d;
+            cvs[i]._k = sc * d;
+          }
+
+          $("wrap").style.setProperty("--u", sc);
+        }
+
+        addEventListener("resize", rs);
+        rs();
+
+        /* ---------- audio ---------- */
+        let ac, mg, nt = 0, step_ = 0;
+
+        function initA() {
+          if (!ac) {
+            try {
+              ac = new (window.AudioContext || window.webkitAudioContext)();
+              mg = ac.createGain();
+              mg.gain.value = muted ? 0 : 0.3;
+              mg.connect(ac.destination);
+            } catch (e) {
+              ac = null;
+            }
+          }
+
+          if (ac && ac.state === "suspended") ac.resume();
+        }
+
+        function tone(f, t, d, ty, v, f2) {
+          const o = ac.createOscillator(),
+            g = ac.createGain();
+          o.type = ty;
+          o.frequency.setValueAtTime(f, t);
+
+          if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+
+          g.gain.setValueAtTime(v, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + d);
+          o.connect(g);
+          g.connect(mg);
+          o.start(t);
+          o.stop(t + d + 0.02);
+        }
+
+        const BASS = [55, 55, 82.4, 55, 65.4, 65.4, 98, 73.4],
+          LEAD = [440, 0, 523, 0, 659, 0, 523, 587];
+
+        function music() {
+          if (!ac) return;
+          if (nt < ac.currentTime) nt = ac.currentTime;
+
+          while (nt < ac.currentTime + 0.12) {
+            const i = step_ % 8;
+            tone(BASS[i], nt, 0.18, "sawtooth", 0.45);
+
+            if (i % 2 == 0) tone(120, nt, 0.12, "sine", 0.9, 40);
+
+            const l = LEAD[i];
+            if (l && step_ % 32 > 15) tone(l, nt, 0.12, "square", 0.07);
+
+            step_++;
+            nt += 0.19;
+          }
+        }
+
+        const sfx = (f, d, ty, v, f2) => {
+          if (ac) tone(f, ac.currentTime, d, ty, v, f2);
+        };
+
+        const ICO =
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#19f5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/>';
+
+        function icon() {
+          $("mu").innerHTML =
+            ICO +
+            (muted ? '<path d="M17 9l5 6M22 9l-5 6"/>' : '<path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12"/>') +
+            "</svg>";
+        }
+
+        function tm() {
+          muted = !muted;
+
+          if (mg) mg.gain.value = muted ? 0 : 0.3;
+
+          try {
+            localStorage.setItem("nd_mute", muted ? "1" : "0");
+          } catch (e) {}
+
+          icon();
+        }
+
+        icon();
+        $("mu").onclick = tm;
+
+        /* ---------- true-perspective 3D: every solid is a prism extruded toward the vanishing point ---------- */
+        function prism(cx, vx, vy, F, rgb, st, e, fill) {
+          const n = F.length,
+            B = F.map((p) => [vx + (p[0] - vx) * e, vy + (p[1] - vy) * e]);
+          let cX = 0,
+            cY = 0;
+
+          for (const p of F) {
+            cX += p[0] / n;
+            cY += p[1] / n;
+          }
+
+          for (let i = 0; i < n; i++) {
+            const a = F[i],
+              b = F[(i + 1) % n],
+              mx = (a[0] + b[0]) / 2,
+              my = (a[1] + b[1]) / 2;
+            let nx = b[1] - a[1],
+              ny = a[0] - b[0];
+            const l = Math.hypot(nx, ny) || 1;
+            nx /= l;
+            ny /= l;
+
+            if (nx * (mx - cX) + ny * (my - cY) < 0) {
+              nx = -nx;
+              ny = -ny;
+            }
+
+            if (nx * (vx - mx) + ny * (vy - my) <= 0) continue;
+
+            const f = 0.25 + 0.55 * Math.max(0, -ny) + 0.3 * Math.max(0, -nx),
+              c = B[(i + 1) % n],
+              d = B[i];
+
+            cx.fillStyle = "rgb(" + ((rgb[0] * f) | 0) + "," + ((rgb[1] * f) | 0) + "," + ((rgb[2] * f) | 0) + ")";
+            cx.beginPath();
+            cx.moveTo(a[0], a[1]);
+            cx.lineTo(b[0], b[1]);
+            cx.lineTo(c[0], c[1]);
+            cx.lineTo(d[0], d[1]);
+            cx.closePath();
+            cx.fill();
+
+            cx.strokeStyle = "rgba(" + rgb.join(",") + ",.45)";
+            cx.lineWidth = 1;
+            cx.stroke();
+          }
+
+          cx.beginPath();
+          F.forEach((p, i) => (i ? cx.lineTo(p[0], p[1]) : cx.moveTo(p[0], p[1])));
+          cx.closePath();
+          cx.fillStyle = fill || "#0a0e2a";
+          cx.fill();
+          cx.lineJoin = "round";
+
+          cx.globalCompositeOperation = "lighter";
+          cx.strokeStyle = "rgba(" + rgb.join(",") + ",.28)";
+          cx.lineWidth = 9;
+          cx.stroke();
+          cx.globalCompositeOperation = "source-over";
+          cx.strokeStyle = st;
+          cx.lineWidth = 3;
+          cx.stroke();
+        }
+
+        function mulberry(a) {
+          return () => {
+            a |= 0;
+            a = (a + 0x6d2b79f5) | 0;
+            let t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t) ^ t) | 0;
+            return (((t ^ (t >>> 14)) >>> 0) / 4294967296);
+          };
+        }
+
+        function mkL(a, b, c, d) {
+          let x = 0,
+            r = [];
+
+          while (x < 1500) {
+            const w = c + Math.random() * (d - c);
+            r.push({ x, w, h: a + Math.random() * (b - a), s: Math.random() });
+            x += w + Math.random() * 12;
+          }
+
+          return r;
+        }
+
+        const L = [
+          { b: mkL(80, 200, 50, 110), f: 0.05, c: "#1c0a40", w: "#ff2bd680" },
+          { b: mkL(40, 140, 40, 90), f: 0.12, c: "#0f0628", w: "#19f5ffa0" },
+        ];
+
+        const CO = [
+          [25, 245, 255, "#19f5ff"],
+          [255, 43, 214, "#ff2bd6"],
+          [150, 90, 255, "#9a6cff"],
+        ];
+
+        function mkP(k, n, gap, a) {
+          const it = [];
+
+          for (let i = 0; i < n; i++) {
+            const c = CO[i % 3];
+            it.push({
+              x: i * gap + Math.random() * 80,
+              w: 60 + Math.random() * 60,
+              h: 200 + Math.random() * 320,
+              c: c.slice(0, 3),
+              s: c[3],
+            });
+          }
+
+          return { k, n, gap, it, a };
+        }
+
+        const PR = [mkP(0.34, 10, 330, 0.8), mkP(0.6, 8, 470, 1)];
+
+        /* ---------- one lane (used for both YOU and JEV) ---------- */
+        const KN = ["spikes", "block", "mixed"];
+
+        function Game(cv, isJ) {
+          const cx = cv.getContext("2d"),
+            g = { st: "idle", score: 0, msg: "", deadT: 0 };
+          let pl,
+            ob,
+            pt,
+            dist,
+            spd,
+            off = 0,
+            lastE,
+            rnd,
+            buf,
+            held,
+            shake,
+            flash,
+            time = 0;
+
+          const J = { busy: false, lat: 250, plan: null, done: null, hold: 0, n: 0, fb: 0, err: 0, gen: 0 };
+
+          g.reset = (seed) => {
+            rnd = mulberry(seed);
+            pl = { y: G - S, vy: 0, r: 0, on: true };
+            ob = [];
+            pt = [];
+            dist = 0;
+            spd = 380;
+            off = 0;
+            lastE = W + 500;
+            buf = 0;
+            held = false;
+            shake = 0;
+            flash = 0;
+            time = 0;
+            g.score = 0;
+            g.st = "play";
+            g.deadT = 0;
+            g.msg = "";
+            J.gen++;
+            J.plan = null;
+            J.done = null;
+            J.hold = 0;
+            J.n = 0;
+            J.fb = 0;
+            J.err = 0;
+          };
+
+          g.press = () => {
+            held = true;
+            buf = 0.12;
+          };
+
+          g.release = () => {
+            held = false;
+          };
+
+          g.idle = (dt) => {
+            off += 260 * dt;
+            time += dt;
+          };
+
+          function spawn() {
+            const x = lastE,
+              r = (rnd() * (g.score < 30 ? 4 : 8)) | 0;
+            let w = S;
+
+            const sp = (dx, n = 1) => {
+              for (let i = 0; i < n; i++) ob.push({ k: 0, x: x + dx + i * S, w: S, h: S });
+            };
+            const bl = (dx, bw, h) => ob.push({ k: 1, x: x + dx, w: bw, h });
+
+            if (r == 0) sp(0);
+            else if (r == 1) {
+              sp(0, 2);
+              w = 80;
+            } else if (r == 2) bl(0, S, S);
+            else if (r == 3) {
+              sp(0, 3);
+              w = 120;
+            } else if (r == 4) {
+              bl(0, 120, S);
+              w = 120;
+            } else if (r == 5) {
+              bl(0, S, S);
+              bl(S, S, 80);
+              w = 80;
+            } else if (r == 6) {
+              const d = S + spd * 0.75;
+              sp(0);
+              sp(d);
+              w = d + S;
+            } else {
+              const d = 80 + spd * 0.75;
+              bl(0, 80, S);
+              sp(d, 2);
+              w = d + 80;
+            }
+
+            lastE = x + w + spd * (0.75 + rnd() * 0.5);
+          }
+
+          function die() {
+            g.st = "dead";
+            g.deadT = 0;
+            shake = 0.35;
+            flash = 0.3;
+            const c = ["#19f5ff", "#ff2bd6", "#ffe62b"];
+
+            for (let i = 0; i < 50; i++) {
+              const a = Math.random() * 6.28,
+                v = 100 + Math.random() * 420;
+              pt.push({
+                x: PX + 20,
+                y: pl.y + 20,
+                vx: Math.cos(a) * v,
+                vy: Math.sin(a) * v - 120,
+                l: 0.5 + Math.random() * 0.6,
+                c: c[i % 3],
+              });
+            }
+
+            onDie(g);
+          }
+
+          g.update = (dt) => {
+            time += dt;
+
+            for (const p of pt) {
+              p.x += p.vx * dt;
+              p.y += p.vy * dt;
+              p.l -= dt;
+              if (g.st === "dead") p.vy += 1200 * dt;
+            }
+
+            pt = pt.filter((p) => p.l > 0);
+
+            if (g.st === "dead") {
+              g.deadT += dt;
+              shake = Math.max(0, shake - dt);
+              flash = Math.max(0, flash - dt);
+              return;
+            }
+
+            if (g.st !== "play") return;
+
+            spd = 380 + Math.min(240, dist * 0.005);
+            const dx = spd * dt;
+            dist += dx;
+            off += dx;
+            lastE -= dx;
+
+            for (const o of ob) o.x -= dx;
+            ob = ob.filter((o) => o.x + o.w > -80);
+
+            while (lastE < W + 250) spawn();
+
+            g.score = (dist / 40) | 0;
+            const p = pl;
+            buf -= dt;
+
+            if (isJ) jevTick();
+
+            if (p.on && (held || buf > 0)) {
+              p.vy = -820;
+              p.on = false;
+              buf = 0;
+
+              if (!isJ) sfx(300, 0.12, "square", 0.22, 760);
+            }
+
+            const pb = p.y + S;
+            p.vy += 2600 * dt;
+            p.y += p.vy * dt;
+            p.on = false;
+
+            if (p.y >= G - S) {
+              p.y = G - S;
+              p.vy = 0;
+              p.on = true;
+            }
+
+            for (const o of ob) {
+              if (o.x > PX + S || o.x + o.w < PX) continue;
+
+              if (o.k) {
+                if (o.x < PX + S - 3 && o.x + o.w > PX + 3) {
+                  const top = G - o.h;
+                  if (p.y + S > top) {
+                    if (pb <= top + 14 && p.vy >= 0) {
+                      p.y = top - S;
+                      p.vy = 0;
+                      p.on = true;
+                    } else return die();
+                  }
+                }
+              } else if (
+                PX + S - 6 > o.x + 11 &&
+                PX + 6 < o.x + o.w - 11 &&
+                p.y + S - 6 > G - S + 12 &&
+                p.y + 6 < G
+              )
+                return die();
+            }
+
+            if (p.on) p.r += ((Math.round(p.r / 1.5708) * 1.5708 - p.r) * Math.min(1, dt * 20));
+            else p.r += dt * 5;
+
+            if (p.on && Math.random() < 0.7)
+              pt.push({
+                x: PX + 4,
+                y: p.y + S - 3,
+                vx: -spd * 0.4 - Math.random() * 90,
+                vy: -Math.random() * 130,
+                l: 0.35,
+                c: isJ ? "#ff2bd6" : "#19f5ff",
+              });
+          };
+
+          /* ----- Jev: decides WHAT to do ~1s ahead (latency-proof); code fires the jump on the exact frame; reflex covers a late answer ----- */
+          function grp() {
+            const a = ob.filter((o) => o.x + o.w > PX + 4).sort((p, q) => p.x - q.x),
+              r = [];
+
+            for (const o of a) {
+              const l = r[r.length - 1];
+              if (l && o.x - (l.x + l.w) < 24) {
+                l.w = o.x + o.w - l.x;
+                l.h = Math.max(l.h, o.h);
+                if (l.k !== o.k) l.k = 2;
+              } else r.push({ o, x: o.x, w: o.w, h: o.h, k: o.k });
+            }
+
+            return r;
+          }
+
+          const tko = (q) => (q.x - PX - S) / spd + (S + q.w) / (2 * spd) - 0.315;
+          const stat = (x) => {
+            $("jv").textContent = "JEV · " + Math.round(J.lat) + "ms · " + J.n + " decisions · " + J.fb + " reflex" + (x || "");
+          };
+          g.stat = stat;
+
+          function jevTick() {
+            const q = grp().find((x) => x.o !== J.done);
+            if (!q) return;
+
+            const tk = tko(q),
+              Lt = J.lat / 1000;
+
+            if (tk <= 0) {
+              if (!pl.on) return;
+              const jv = J.plan && J.plan.o === q.o;
+              if (!jv) J.fb++;
+              J.plan = null;
+              J.done = q.o;
+              buf = 0.12;
+              stat(jv ? "" : " ⚠ REFLEX");
+              return;
+            }
+
+            if (J.plan && J.plan.o === q.o) return;
+
+            if (!J.busy && time > J.hold && tk < 1.4 && tk > Lt + 0.1) jevAsk(q);
+          }
+
+          function jevAsk(q) {
+            J.busy = true;
+            const gen = J.gen,
+              t0 = performance.now(),
+              f = (n) => ({
+                kind: KN[n.k],
+                width_px: Math.round(n.w),
+                height_px: n.h,
+                seconds_until_contact: +((n.x - PX - S) / spd).toFixed(2),
+              });
+            const body = {
+              speed_px_s: Math.round(spd),
+              next_obstacle: f(q),
+              following: grp().slice(1, 3).map(f),
+            };
+
+            fetch("api/decide", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+            })
+              .then((r) => (r.ok ? r.json() : r.json().then((e) => Promise.reject(new Error(e.error || r.status)))))
+              .then((d) => {
+                J.lat = J.lat * 0.6 + (performance.now() - t0) * 0.4;
+                J.err = 0;
+                J.n++;
+
+                if (gen === J.gen && g.st === "play") {
+                  if (d.action === "jump" && J.done !== q.o) J.plan = { o: q.o };
+                  else J.hold = time + 0.12;
+                }
+
+                stat(" · " + String(d.action).toUpperCase() + (d.confidence != null ? " " + Math.round(d.confidence * 100) + "%" : ""));
+              })
+              .catch((e) => {
+                if (++J.err >= 4) onJevFail(e.message);
+                else $("jv").textContent = "JEV RETRYING — " + e.message;
+              })
+              .finally(() => {
+                J.busy = false;
+              });
+          }
+
+          /* ----- drawing ----- */
+          g.draw = () => {
+            const k = cv._k;
+            cx.setTransform(k, 0, 0, k, 0, 0);
+            cx.save();
+
+            if (shake > 0 && !RM) cx.translate((Math.random() - 0.5) * shake * 40, (Math.random() - 0.5) * shake * 40);
+
+            const vy = 250 + Math.max(0, G - S - pl.y) * 0.25,
+              e = 1 / (1 + (90 + (spd - 380) * 0.08) / 600);
+            let gr = cx.createLinearGradient(0, 0, 0, vy);
+            gr.addColorStop(0, "#06021a");
+            gr.addColorStop(0.65, "#2a0a4a");
+            gr.addColorStop(1, "#a0189a");
+            cx.fillStyle = gr;
+            cx.fillRect(0, 0, W, H);
+
+            const sy = vy - 40;
+            cx.save();
+            cx.beginPath();
+            cx.arc(VX, sy, 105, 0, 6.29);
+            cx.clip();
+            cx.beginPath();
+            cx.rect(0, 0, W, sy);
+
+            for (let i = 0; i < 6; i++) cx.rect(0, sy + 8 + i * 17, W, 13 - i * 2);
+
+            cx.clip();
+            gr = cx.createLinearGradient(0, sy - 105, 0, sy + 105);
+            gr.addColorStop(0, "#ffe62b");
+            gr.addColorStop(1, "#ff2bd6");
+            cx.fillStyle = gr;
+            cx.fillRect(0, sy - 105, W, 210);
+            cx.restore();
+
+            for (const l of L) {
+              const o = -((off * l.f) % 1500);
+              cx.fillStyle = l.c;
+              cx.beginPath();
+
+              for (let r = 0; r < 2; r++)
+                for (const b of l.b) {
+                  const x = b.x + o + r * 1500;
+                  if (x > W || x + b.w < 0) continue;
+                  cx.rect(x, vy - b.h, b.w, b.h);
+                }
+
+              cx.fill();
+
+              cx.fillStyle = l.w;
+              cx.beginPath();
+
+              for (let r = 0; r < 2; r++)
+                for (const b of l.b) {
+                  const x = b.x + o + r * 1500;
+                  if (x > W || x + b.w < 0) continue;
+                  let n = 0;
+
+                  for (let y = vy - b.h + 12; y < vy - 8; y += 15)
+                    for (let xx = x + 8; xx < x + b.w - 10; xx += 14) {
+                      if (((n++ * 7 + ((b.s * 97) | 0)) % 5) < 1) cx.rect(xx, y, 6, 7);
+                    }
+                }
+
+              cx.fill();
+            }
+
+            gr = cx.createLinearGradient(0, vy, 0, H);
+            gr.addColorStop(0, "#4a1070");
+            gr.addColorStop(0.3, "#16072e");
+            gr.addColorStop(1, "#05040c");
+            cx.fillStyle = gr;
+            cx.fillRect(0, vy, W, H - vy);
+
+            cx.strokeStyle = "rgba(255,43,214,.5)";
+            cx.lineWidth = 1.3;
+            cx.beginPath();
+
+            for (let m = -16; m <= 16; m++) {
+              const x0 = VX + m * 100 - (off % 100);
+              cx.moveTo(VX, vy);
+              cx.lineTo(VX + (x0 - VX) * 2.6, vy + (G - vy) * 2.6);
+            }
+
+            for (let j = 0; j < 16; j++) {
+              const y = vy + (G - vy) * 0.05 * Math.pow(1.34, j);
+              if (y > H) break;
+              cx.moveTo(0, y);
+              cx.lineTo(W, y);
+            }
+
+            cx.stroke();
+
+            for (const r of PR) {
+              const P = r.n * r.gap,
+                yb = vy + (G - vy) * r.k;
+              cx.globalAlpha = r.a;
+
+              for (const it of r.it) {
+                const xw = (((it.x - off) % P) + P) % P - 250,
+                  px = VX + (xw - VX) * r.k,
+                  w = it.w * r.k,
+                  h = it.h * r.k;
+
+                if (px > W || px + w < -40) continue;
+
+                prism(cx, VX, vy, [[px, yb - h], [px + w, yb - h], [px + w, yb], [px, yb]], it.c, it.s, 0.94);
+              }
+
+              cx.globalAlpha = 1;
+            }
+
+            const by = vy + (G - vy) * e,
+              lx = VX - VX * e,
+              rx = VX + (W - VX) * e;
+
+            cx.fillStyle = "rgba(25,245,255,.1)";
+            cx.beginPath();
+            cx.moveTo(0, G);
+            cx.lineTo(W, G);
+            cx.lineTo(rx, by);
+            cx.lineTo(lx, by);
+            cx.fill();
+
+            cx.strokeStyle = "rgba(25,245,255,.3)";
+            cx.lineWidth = 1.2;
+            cx.beginPath();
+            cx.moveTo(lx, by);
+            cx.lineTo(rx, by);
+
+            for (let m = -16; m <= 16; m++) {
+              const x0 = VX + m * 100 - (off % 100);
+              cx.moveTo(x0, G);
+              cx.lineTo(VX + (x0 - VX) * e, by);
+            }
+
+            cx.stroke();
+
+            cx.globalCompositeOperation = "lighter";
+            cx.strokeStyle = "rgba(25,245,255,.35)";
+            cx.lineWidth = 10;
+            cx.beginPath();
+            cx.moveTo(0, G);
+            cx.lineTo(W, G);
+            cx.stroke();
+            cx.globalCompositeOperation = "source-over";
+            cx.strokeStyle = "#19f5ff";
+            cx.lineWidth = 3;
+            cx.stroke();
+
+            const py = g.st === "idle" ? G - S - Math.abs(Math.sin(time * 3)) * 14 : pl.y,
+              hh = Math.max(0, G - S - py),
+              sx = PX + 20 + (VX - PX - 20) * (1 - e) / 2;
+
+            cx.fillStyle = "rgba(25,245,255," + (0.28 - hh / 600) + ")";
+            cx.beginPath();
+            cx.ellipse(sx, G + (vy - G) * (1 - e) / 2, 26 - hh / 8, 6, 0, 0, 6.29);
+            cx.fill();
+
+            for (const o of ob) {
+              if (o.x > W + 60) continue;
+
+              if (o.k)
+                prism(cx, VX, vy, [[o.x, G - o.h], [o.x + o.w, G - o.h], [o.x + o.w, G], [o.x, G]], [122, 70, 255], "#9a6cff", e, "#0c1030");
+              else
+                prism(cx, VX, vy, [[o.x, G], [o.x + o.w / 2, G - o.h], [o.x + o.w, G]], [255, 43, 214], "#ff2bd6", e, "#1c0426");
+            }
+
+            for (const p of pt) {
+              cx.globalAlpha = Math.min(1, p.l * 2.5);
+              cx.fillStyle = p.c;
+              cx.fillRect(p.x, p.y, 4, 4);
+            }
+
+            cx.globalAlpha = 1;
+
+            if (g.st !== "dead") {
+              const c = Math.cos(g.st === "idle" ? 0 : pl.r),
+                s = Math.sin(g.st === "idle" ? 0 : pl.r),
+                cxp = PX + 20,
+                cyp = py + 20,
+                me = isJ ? [255, 43, 214] : [25, 245, 255],
+                ms = isJ ? "#ff2bd6" : "#19f5ff";
+
+              const F = [[-20, -20], [20, -20], [20, 20], [-20, 20]].map((q) => [cxp + q[0] * c - q[1] * s, cyp + q[0] * s + q[1] * c]);
+
+              prism(cx, VX, vy, F, me, ms, e, isJ ? "#2a0626" : "#062a33");
+              cx.save();
+              cx.translate(cxp, cyp);
+              cx.rotate(g.st === "idle" ? 0 : pl.r);
+              cx.fillStyle = ms;
+              cx.fillRect(-13, -9, 26, 8);
+              cx.strokeStyle = ms;
+              cx.globalAlpha = 0.55;
+              cx.lineWidth = 1.5;
+              cx.strokeRect(-12, 3, 24, 14);
+              cx.restore();
+            }
+
+            cx.restore();
+
+            if (flash > 0) {
+              cx.fillStyle = "rgba(255,255,255," + flash * 2 + ")";
+              cx.fillRect(0, 0, W, H);
+            }
+
+            cx.textAlign = "center";
+
+            if (g.st === "dead") {
+              cx.fillStyle = "rgba(40,0,30,.5)";
+              cx.fillRect(0, 0, W, H);
+              cx.fillStyle = "#ff2bd6";
+              cx.font = "800 44px Orbitron,sans-serif";
+              cx.fillText("SIGNAL LOST", VX, 280);
+            }
+
+            if (g.msg) {
+              cx.fillStyle = "rgba(5,4,12,.72)";
+              cx.fillRect(0, 0, W, H);
+              cx.fillStyle = "#ffe62b";
+              cx.font = "800 34px Orbitron,sans-serif";
+              cx.fillText(g.msg, VX, 280);
+            }
+          };
+
+          g.reset(1);
+          g.st = "idle";
+          return g;
+        }
+
+        /* ---------- race controller ---------- */
+        const gm = [Game(cvs[0], false), Game(cvs[1], true)];
+        let state = "menu",
+          jevOn = false,
+          reason = "",
+          first = -1,
+          endT = 0,
+          overT = 0,
+          paused = false,
+          last = 0,
+          c0 = "",
+          c1 = "";
+
+        function onDie(g) {
+          sfx(260, 0.5, "sawtooth", 0.5, 30);
+          if (state === "play" && first < 0) {
+            first = g === gm[0] ? 0 : 1;
+            endT = 0;
+          }
+        }
+
+        function onJevFail(m) {
+          jevOn = false;
+          gm[1].st = "idle";
+          gm[1].msg = "JEV OFFLINE";
+          $("jv").textContent = "JEV ERROR — " + m;
+        }
+
+        async function start() {
+          initA();
+          if (state === "play" && overT < 0) return;
+
+          try {
+            const r = await (await fetch("api/status")).json();
+            jevOn = !!r.ready;
+            reason = r.reason || "";
+          } catch (e) {
+            jevOn = false;
+            reason = "run server.py";
+          }
+
+          const seed = (Math.random() * 1e9) | 0;
+          gm[0].reset(seed);
+          gm[1].reset(seed);
+
+          if (!jevOn) {
+            gm[1].st = "idle";
+            gm[1].msg = "JEV OFFLINE";
+            $("jv").textContent = reason.toUpperCase();
+          } else {
+            $("jv").textContent = "JEV ONLINE";
+          }
+
+          state = "play";
+          first = -1;
+          endT = 0;
+          overT = 0;
+          paused = false;
+          step_ = 0;
+          nt = ac ? ac.currentTime + 0.1 : 0;
+
+          for (const i of ["menu", "dead", "pz"]) $(i).classList.add("hide");
+        }
+
+        function finish() {
+          state = "over";
+          overT = 0;
+          const a = gm[0],
+            b = gm[1],
+            s0 = a.score,
+            s1 = b.score;
+
+          if (s0 > best) {
+            best = s0;
+            try {
+              localStorage.setItem("nd_best", best);
+            } catch (e) {}
+          }
+
+          if (!jevOn) {
+            $("hd").textContent = "RUN OVER";
+            $("res").textContent = s0 + "m · BEST " + best + "m";
+            $("rec").textContent = "";
+          } else {
+            const win = a.st === "dead" && b.st === "dead" ? (s0 > s1 ? 0 : s1 > s0 ? 1 : 2) : a.st === "dead" ? 1 : 0;
+            $("hd").textContent = win === 0 ? "YOU WIN" : win === 1 ? "JEV WINS" : "DRAW";
+            wl[win === 0 ? "w" : win === 1 ? "l" : "t"]++;
+
+            try {
+              localStorage.setItem("nd_wl", JSON.stringify(wl));
+            } catch (e) {}
+
+            $("res").textContent = "YOU " + s0 + "m · JEV " + s1 + "m";
+            $("rec").textContent = "RECORD  YOU " + wl.w + " – " + wl.l + " JEV" + (wl.t ? " · " + wl.t + " DRAWS" : "");
+          }
+
+          $("dead").classList.remove("hide");
+        }
+
+        function stepG(dt) {
+          if (state === "menu") {
+            gm[0].idle(dt);
+            gm[1].idle(dt);
+            return;
+          }
+
+          if (state === "over") {
+            overT += dt;
+            return;
+          }
+
+          gm[0].update(dt);
+          if (jevOn) gm[1].update(dt);
+
+          if (first >= 0) {
+            endT += dt;
+
+            if ((!jevOn && gm[0].st === "dead" && endT > 0.6) || (jevOn && (endT > 0.9 || (gm[0].st === "dead" && gm[1].st === "dead")))) finish();
+          }
+
+          music();
+        }
+
+        function fr(ts) {
+          let a = Math.min(0.033, (ts - last) / 1000 || 0);
+          last = ts;
+
+          if (!paused)
+            while (a > 0) {
+              const s = Math.min(a, 1 / 120);
+              stepG(s);
+              a -= s;
+            }
+
+          gm[0].draw();
+          gm[1].draw();
+
+          const a0 = gm[0].score + "m",
+            a1 = gm[1].score + "m";
+
+          if (a0 !== c0) {
+            c0 = a0;
+            $("s0").textContent = a0;
+          }
+
+          if (a1 !== c1) {
+            c1 = a1;
+            $("s1").textContent = a1;
+          }
+
+          requestAnimationFrame(fr);
+        }
+
+        requestAnimationFrame(fr);
+
+        const tp = () => {
+          if (state !== "play") return;
+          paused = !paused;
+          $("pz").classList.toggle("hide", !paused);
+          last = performance.now();
+        };
+
+        function press() {
+          initA();
+          if (state === "menu") return start();
+          if (state === "over") {
+            if (overT > 0.35) start();
+            return;
+          }
+          if (paused) {
+            tp();
+            return;
+          }
+          gm[0].press();
+        }
+
+        const JK = [" ", "ArrowUp", "w", "W", "Enter"];
+
+        addEventListener("keydown", (e) => {
+          if (JK.includes(e.key)) {
+            e.preventDefault();
+            if (e.repeat) return;
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+            press();
+          } else if (e.key === "Escape" || e.key === "p" || e.key === "P") tp();
+          else if (e.key === "m" || e.key === "M") tm();
+        });
+
+        addEventListener("keyup", (e) => {
+          if (JK.includes(e.key)) gm[0].release();
+        });
+
+        $("wrap").addEventListener("pointerdown", (e) => {
+          if (e.target.closest && e.target.closest("button")) return;
+          e.preventDefault();
+          press();
+        });
+
+        addEventListener("pointerup", () => gm[0].release());
+        addEventListener("pointercancel", () => gm[0].release());
+        $("go").onclick = start;
+        $("rt").onclick = start;
+
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden && state === "play" && !paused) tp();
+        });
+      })();
+    </script>
+  </body>
+</html>
+Z
